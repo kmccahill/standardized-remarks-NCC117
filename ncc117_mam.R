@@ -18,7 +18,7 @@ library(lubridate)
 setwd('~/neon_r_scripts/NCC_117/mammals')
 
 ################################################################################
-# Download data from the Trap Collection app - parent and child records:
+# Download data from the Trap Collection app:
 MAM <-loadByProduct(
   dpID='DP1.10072.001', 
   site = "all", 
