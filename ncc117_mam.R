@@ -15,7 +15,7 @@ library(dplyr)
 library(lubridate)
 
 # Set working directory
-setwd('~/neon_r_scripts/NCC_117')
+setwd('~/neon_r_scripts/NCC_117/mammals')
 
 ################################################################################
 # Download data from the Trap Collection app - parent and child records:
@@ -32,7 +32,7 @@ mam.c <- MAM$mam_pertrapnight
 View(mam.c)
 
 # Save locally due to lengthy download time
-write.csv(mam.c,"C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mamdata_new.csv", row.names = FALSE)
+write.csv(mam.c,"C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mammals/mamdata.csv", row.names = FALSE)
 read.csv(file = "mamdata_new.csv")
 
 # Filter data to captures only
@@ -69,7 +69,7 @@ n_remarks <- mam.remarks2 %>%
   arrange(desc(n))
 View(n_remarks)
 
-write.csv(n_remarks, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mam.remarks.counts.new.csv", row.names = FALSE)
+write.csv(n_remarks, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mammals/mam.remarks.raw.child.csv", row.names = FALSE)
 
 # Number of each remark that was recorded over 1 time (excludes remarks written once):
 # n_remarks2 <- n_remarks %>%  filter(n > 1)
@@ -87,7 +87,7 @@ n_remarks_final <- n_remarks_per_year %>%
   pivot_wider(names_from = year, values_from = n)
 View(n_remarks_final)
 
-write.csv(n_remarks_final, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mam.remarks.n.new.csv", row.names = FALSE)
+write.csv(n_remarks_final, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mammals/mam.remarks.n.child.csv", row.names = FALSE)
 
 
 # Graph for number of remarks for 3 seasons:
@@ -154,21 +154,24 @@ write.csv(n_remarks_final, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/m
 
 
 ################################################################################
-# Now look at parent level remarks from mam_perplotnight dataset:
+mam.c <- MAM$mam_pertrapnight
+
+# Now look at parent, plotlevel remarks from mam_perplotnight dataset:
 mam.p <- MAM$mam_perplotnight
 View(mam.p)
 
-# Select columns that might be helpful when reviewing remarksmam.p.filt <- mam.caps %>% 
-  select(domainID, siteID, collectDate, remarks)  
+# Select columns that might be helpful when reviewing remarks
+mam.p.filt <- mam.p %>% 
+  select(domainID, siteID, collectDate, samplingImpractical, remarks)  
 View(mam.p.filt)
 
 # Group by domain and collect date
-mam.p.grp <- mam2.filt %>%
+mam.p.grp <- mam.p.filt %>%
   group_by(domainID, collectDate)
 View(mam.p.grp)
 
 # Show remarks only
-mam.p.remarks <- subset(mam.p.grp2, !(mam.p.grp2$remarks == ""))
+mam.p.remarks <- subset(mam.p.grp, !(mam.p.grp$remarks == ""))
 View(mam.p.remarks)
 
 #1. Create new dataframe of each remark based on domain, year, and number of each remark
@@ -181,12 +184,12 @@ View(mam.p.remarks2)
 # Number of each remark
 # Group  by domain and year, and sort # of remarks from high to low
 n_remarks2 <- mam.p.remarks2 %>%
-  group_by(domainID, year, remarks) %>%
+  group_by(domainID, year, samplingImpractical, remarks) %>%
   summarise(n = n())%>%
   arrange(desc(n))
 View(n_remarks2)
 
-write.csv(n_remarks2, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mam.remarks.counts.parent.csv", row.names = FALSE)
+write.csv(n_remarks2, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mammals/mam.remarks.raw.parent.csv", row.names = FALSE)
 
 #2. Total number of remarks per year
 n_remarks_per_year.2 <- mam.p.remarks2 %>%
@@ -199,5 +202,5 @@ n_remarks_final2 <- n_remarks_per_year.2 %>%
   pivot_wider(names_from = year, values_from = n)
 View(n_remarks_final2)
 
-write.csv(n_remarks_final2, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mam.remarks.n.parent.csv", row.names = FALSE)
+write.csv(n_remarks_final2, "C:/Users/mccahill/Documents/neon_r_scripts/NCC_117/mammals/mam.remarks.n.parent.csv", row.names = FALSE)
 
